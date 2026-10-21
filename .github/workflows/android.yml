@@ -15,23 +15,23 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
-
-      - name: Set up Android SDK & NDK
-        uses: android-actions/setup-android@v3
 
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y scons pkg-config libasound2-dev libpulse-dev
+          sudo apt-get install -y scons pkg-config
 
       - name: Build APK
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/25.2.9519653
         run: |
           scons target=android mode=release -j$(nproc)
         continue-on-error: true
 
-      - name: Locate and upload APK
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: goxel-apk
