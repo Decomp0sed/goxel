@@ -1,0 +1,41 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Set up Android SDK & NDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y scons pkg-config libasound2-dev libpulse-dev
+
+      - name: Build APK
+        run: |
+          scons target=android mode=release -j$(nproc)
+        continue-on-error: true
+
+      - name: Locate and upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: goxel-apk
+          path: |
+            **/*.apk
+            android/bin/*.apk
+          if-no-files-found: warn
