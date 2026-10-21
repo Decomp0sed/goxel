@@ -12,18 +12,7 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Inspect repository structure
+      - name: Find Android build scripts
         run: |
-          echo "=== Root files ==="
-          ls -la
-          echo "=== Android directory ==="
-          ls -la android || true
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y scons pkg-config libasound2-dev libpulse-dev
-
-      - name: Build
-        run: |
-          scons target=android mode=release
+          echo "=== Поиск файлов сборки Android ==="
+          find . -maxdepth 3 -iname "*android*" -o -iname "*gradle*"
